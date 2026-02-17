@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<!--
+  EvaluRate – Marketing Landing Page
+  ====================================
+  A single-page site for the EvaluRate iOS app.
+  EvaluRate is a CPR compression rate monitoring tool for instructors.
+
+  Page structure:
+    1. <head>       – Meta, fonts, and all embedded CSS
+    2. <nav>        – Sticky top navigation bar
+    3. .hero        – Above-the-fold headline + App Store badge
+    4. .stats       – Three key stats bar (blue background)
+    5. #features    – Six feature cards grid
+    6. #how-it-works – Numbered steps walkthrough
+    7. #instructors – Two-column instructor-focused section
+    8. .cta-section – Full-width download call-to-action
+    9. <footer>     – Copyright and App Store link
+
+  App Store link: https://apps.apple.com/us/app/evalurate/id6593661938
+  Official Apple badge images served from tools.applemediaservices.com
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EvaluRate – CPR Compression Monitoring for Instructors</title>
+  <meta name="description" content="EvaluRate gives CPR instructors real-time compression rate and timing feedback to evaluate student performance with confidence." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #0A6EBD;
+      --blue-dark:  #084F8A;
+      --blue-light: #E8F4FD;
+      --red:        #D93025;
+      --text:       #1A1A2E;
+      --muted:      #5A6478;
+      --border:     #DDE3EC;
+      --white:      #FFFFFF;
+      --bg:         #F7FAFD;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--white);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--blue);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span { color: var(--red); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 32px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--blue); }
+
+    .nav-cta {
+      background: var(--blue);
+      color: var(--white) !important;
+      padding: 8px 18px;
+      border-radius: 8px;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--blue-dark) !important; color: var(--white) !important; }
+
+    /* ── HERO ─────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(160deg, var(--blue-light) 0%, var(--white) 60%);
+      padding: 96px 24px 80px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--blue);
+      margin-bottom: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      max-width: 680px;
+      margin: 0 auto 20px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--blue);
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .badge-appstore {
+      display: inline-block;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .badge-appstore:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    .badge-appstore img { display: block; height: 54px; width: auto; }
+
+    /* ── STATS ────────────────────────────────────────────── */
+    .stats {
+      background: var(--blue);
+      padding: 40px 24px;
+    }
+
+    .stats-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -1px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.72);
+      margin-top: 4px;
+    }
+
+    /* ── SECTION COMMON ───────────────────────────────────── */
+    section { padding: 80px 24px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      max-width: 560px;
+      line-height: 1.15;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 500px;
+      margin-top: 12px;
+    }
+
+    /* ── FEATURES ─────────────────────────────────────────── */
+    #features { background: var(--bg); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 52px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .feature-card:hover {
+      box-shadow: 0 8px 32px rgba(10,110,189,0.1);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--blue-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      font-size: 1.4rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── HOW IT WORKS ─────────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 32px;
+      margin-top: 52px;
+      counter-reset: steps;
+    }
+
+    .step {
+      counter-increment: steps;
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      background: var(--blue);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .step-number::before { content: counter(steps); }
+
+    .step h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* ── FOR INSTRUCTORS ──────────────────────────────────── */
+    #instructors { background: var(--bg); }
+
+    .instructor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    .check-list {
+      list-style: none;
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .check-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.95rem;
+    }
+
+    .check-list li::before {
+      content: '';
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      background: var(--blue);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-size: 12px;
+      background-repeat: no-repeat;
+      background-position: center;
+      margin-top: 2px;
+    }
+
+    .instructor-visual {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+      border-radius: 24px;
+      padding: 40px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .metric-card {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metric-label { font-size: 0.8rem; opacity: 0.75; margin-bottom: 4px; }
+    .metric-value { font-size: 2rem; font-weight: 800; line-height: 1; }
+    .metric-unit { font-size: 0.85rem; opacity: 0.75; }
+
+    .metric-badge {
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-good { background: rgba(52,211,153,0.25); color: #34D399; }
+    .badge-warn { background: rgba(251,191,36,0.25); color: #FBBF24; }
+
+    /* ── CTA ──────────────────────────────────────────────── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -1px;
+      max-width: 560px;
+      margin: 0 auto 16px;
+    }
+
+    .cta-section p {
+      color: rgba(255,255,255,0.75);
+      font-size: 1.05rem;
+      max-width: 420px;
+      margin: 0 auto 36px;
+    }
+
+
+    /* ── FOOTER ───────────────────────────────────────────── */
+    footer {
+      background: var(--text);
+      color: rgba(255,255,255,0.5);
+      padding: 40px 24px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .footer-logo span { color: #FF6B6B; }
+
+    footer p { font-size: 0.85rem; }
+
+    footer nav { border: none; background: transparent; position: static; backdrop-filter: none; }
+    footer nav a { color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+    footer nav a:hover { color: var(--white); }
+    footer .nav-inner { padding: 0; height: auto; }
+    footer nav ul { gap: 20px; }
+
+    /* ── RESPONSIVE ───────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .stats-inner { grid-template-columns: 1fr; gap: 16px; }
+      .instructor-grid { grid-template-columns: 1fr; }
+      .instructor-visual { order: -1; }
+      nav ul { display: none; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     NAV – Sticky top bar with logo + section links + App Store CTA
+     ══════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#">Evalu<span>Rate</span></a>
+    <ul>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#instructors">For Instructors</a></li>
+      <li>
+        <a class="nav-cta" href="https://apps.apple.com/us/app/evalurate/id6593661938" target="_blank" rel="noopener">
+          Download
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO – Above-the-fold: headline, tagline, and App Store download badge
+     ══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-badge">CPR Instructor Tool</div>
+  <h1>Grade compressions.<br /><em>In real time.</em></h1>
+  <p>EvaluRate gives CPR instructors instant feedback on compression rate and timing — so you can evaluate students with confidence, not guesswork.</p>
+  <div class="hero-actions">
+    <a class="badge-appstore" href="https://apps.apple.com/us/app/evalurate/id6593661938" target="_blank" rel="noopener">
+      <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store" />
+    </a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     STATS – Blue bar with three key numbers:
+       100-120 BPM target (ILCOR guideline), real-time monitoring, iOS
+     ══════════════════════════════════════════ -->
+<div class="stats">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-value">100–120</div>
+      <div class="stat-label">Target compressions per minute (ILCOR guideline)</div>
+    </div>
+    <div>
+      <div class="stat-value">Real-time</div>
+      <div class="stat-label">Live rate monitoring during student evaluations</div>
+    </div>
+    <div>
+      <div class="stat-value">iOS</div>
+      <div class="stat-label">Native iPhone app — always ready to go</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FEATURES – Six-card grid highlighting core app capabilities:
+       Live rate, guideline feedback, session metrics, instant start, iOS, instructor-ready
+     ══════════════════════════════════════════ -->
+<section id="features">
+  <div class="section-inner">
+    <p class="section-label">Features</p>
+    <h2 class="section-title">Everything an instructor needs</h2>
+    <p class="section-sub">Purpose-built for CPR evaluation — no extra setup, no complicated menus.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⏱️</div>
+        <h3>Live Compression Rate</h3>
+        <p>See compressions per minute update in real time as your student performs CPR — no manual counting required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Guideline-Based Feedback</h3>
+        <p>Instantly know if a student is in the 100–120 BPM target range, aligned with ILCOR and Red Cross guidelines.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Session Metrics</h3>
+        <p>Review average rate, consistency, and timing across a complete evaluation session.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant Start</h3>
+        <p>Launch and begin monitoring in seconds. No calibration or complicated setup required before class.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Runs on iPhone</h3>
+        <p>A native iOS app that works reliably on any modern iPhone — even with the screen on the table.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Evaluation-Ready</h3>
+        <p>Designed from the ground up for instructors evaluating students, not for patients or learners.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     HOW IT WORKS – Four numbered steps:
+       Open app → Start monitoring → Read the rate → Review & debrief
+     ══════════════════════════════════════════ -->
+<section id="how-it-works">
+  <div class="section-inner">
+    <p class="section-label">How It Works</p>
+    <h2 class="section-title">Simple by design</h2>
+    <p class="section-sub">EvaluRate gets out of your way so you can focus on teaching.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-number"></div>
+        <h3>Open EvaluRate</h3>
+        <p>Launch the app on your iPhone before the evaluation begins. No sign-in or configuration needed.</p>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <h3>Start Monitoring</h3>
+        <p>Tap to begin. EvaluRate immediately starts detecting and timing each compression.</p>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <h3>Read the Rate</h3>
+        <p>Watch the live BPM readout and see at a glance whether the student is on target, too fast, or too slow.</p>
+      </div>
+      <div class="step">
+        <div class="step-number"></div>
+        <h3>Review & Debrief</h3>
+        <p>When the session ends, review the session summary to support meaningful feedback.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOR INSTRUCTORS – Two-column section:
+       Left: checklist of instructor benefits
+       Right: mock live-session UI showing BPM metric cards
+     ══════════════════════════════════════════ -->
+<section id="instructors">
+  <div class="section-inner">
+    <div class="instructor-grid">
+      <div>
+        <p class="section-label">For Instructors</p>
+        <h2 class="section-title">Built for the people who teach lifesaving skills</h2>
+        <p class="section-sub">Whether you teach CPR/AED or First Aid/CPR/AED courses, EvaluRate gives you objective data to back up your evaluation.</p>
+        <ul class="check-list">
+          <li>Remove the guesswork from compression rate evaluation</li>
+          <li>Provide students with objective, data-backed feedback</li>
+          <li>Spend less time counting and more time coaching</li>
+          <li>Works anywhere — classroom, skills lab, or field</li>
+          <li>No external equipment or manikin connection required</li>
+        </ul>
+      </div>
+      <div class="instructor-visual">
+        <div style="font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">Live Session</div>
+        <div class="metric-card">
+          <div>
+            <div class="metric-label">Compression Rate</div>
+            <div style="display:flex;align-items:baseline;gap:8px;">
+              <div class="metric-value">112</div>
+              <div class="metric-unit">BPM</div>
+            </div>
+          </div>
+          <span class="metric-badge badge-good">In Range</span>
+        </div>
+        <div class="metric-card">
+          <div>
+            <div class="metric-label">Session Average</div>
+            <div style="display:flex;align-items:baseline;gap:8px;">
+              <div class="metric-value">108</div>
+              <div class="metric-unit">BPM</div>
+            </div>
+          </div>
+          <span class="metric-badge badge-good">On Target</span>
+        </div>
+        <div class="metric-card">
+          <div>
+            <div class="metric-label">Last 10 sec avg</div>
+            <div style="display:flex;align-items:baseline;gap:8px;">
+              <div class="metric-value">124</div>
+              <div class="metric-unit">BPM</div>
+            </div>
+          </div>
+          <span class="metric-badge badge-warn">Too Fast</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA – Full-width blue download section with white App Store badge
+     ══════════════════════════════════════════ -->
+<section class="cta-section">
+  <h2>Ready to elevate your CPR evaluations?</h2>
+  <p>Download EvaluRate free on the App Store and bring objective compression monitoring to your next class.</p>
+  <a class="badge-appstore" href="https://apps.apple.com/us/app/evalurate/id6593661938" target="_blank" rel="noopener">
+    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/white/en-us" alt="Download on the App Store" />
+  </a>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOOTER – Dark bar with logo, copyright, and App Store text link
+     ══════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <a class="footer-logo" href="#">Evalu<span>Rate</span></a>
+    <p>&copy; 2026 EvaluRate. All rights reserved.</p>
+    <nav>
+      <div class="nav-inner">
+        <ul>
+          <li><a href="https://apps.apple.com/us/app/evalurate/id6593661938" target="_blank" rel="noopener">App Store</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
