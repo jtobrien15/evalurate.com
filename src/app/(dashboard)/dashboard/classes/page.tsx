@@ -5,8 +5,18 @@ import { db } from "@/lib/db";
 import { format } from "date-fns";
 import { COURSE_TYPE_LABELS, LOCATION_LABELS, CLASS_STATUS_COLORS } from "@/lib/constants";
 
-export default async function ClassesPage() {
+interface ClassesPageProps {
+  searchParams: Promise<{ location?: string }>;
+}
+
+export default async function ClassesPage({ searchParams }: ClassesPageProps) {
+  const params = await searchParams;
+  const locationFilter = params.location;
+
   const classes = await db.class.findMany({
+    where: locationFilter
+      ? { location: locationFilter as "EMILSON" | "HALE" }
+      : {},
     include: {
       enrollments: {
         where: {
@@ -63,7 +73,7 @@ export default async function ClassesPage() {
                   colSpan={6}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
-                  No classes yet. Create your first class to get started.
+                  No classes found{locationFilter ? ` for ${LOCATION_LABELS[locationFilter] || locationFilter}` : ""}. Create your first class to get started.
                 </td>
               </tr>
             ) : (

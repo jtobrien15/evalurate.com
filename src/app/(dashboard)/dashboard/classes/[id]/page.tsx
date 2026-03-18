@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { format } from "date-fns";
 import { EnrollmentTable } from "@/components/enrollment-table";
 import { COURSE_TYPE_LABELS, LOCATION_LABELS } from "@/lib/constants";
+import { ClassInstructorSection } from "@/components/class-instructor-section";
 
 export default async function ClassDetailPage({
   params,
@@ -118,6 +119,26 @@ export default async function ClassDetailPage({
         <EnrollmentTable
           enrollments={cls.enrollments}
           classId={cls.id}
+        />
+      </div>
+
+      {/* Instructors */}
+      <div className="mb-8">
+        <ClassInstructorSection
+          classId={cls.id}
+          courseType={cls.courseType}
+          location={cls.location}
+          initialAssignments={cls.instructorAssignments.map((a) => ({
+            id: a.id,
+            classId: a.classId,
+            instructorId: a.instructorId,
+            role: a.role,
+            instructor: {
+              id: a.instructor.id,
+              name: a.instructor.name,
+              email: a.instructor.email,
+            },
+          }))}
         />
       </div>
 

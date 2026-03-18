@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import crypto from "crypto";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const location = searchParams.get("location");
+
     const classes = await db.class.findMany({
+      where: location
+        ? { location: location as "EMILSON" | "HALE" }
+        : {},
       include: {
         _count: {
           select: { enrollments: true },

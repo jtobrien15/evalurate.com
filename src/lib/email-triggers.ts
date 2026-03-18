@@ -12,6 +12,7 @@ import type { Enrollment, Student, Class } from "@/types";
 import WelcomeEmail from "@/emails/welcome";
 import PrereqFailedEmail from "@/emails/prereq-failed";
 import TransferOptionsEmail from "@/emails/transfer-options";
+import StudentInfoRequestEmail from "@/emails/student-info-request";
 import { COURSE_TYPE_LABELS, LOCATION_LABELS } from "@/lib/constants";
 
 // ─── DISPLAY HELPERS ─────────────────────────────────────────────────────────
@@ -132,6 +133,39 @@ export async function sendTransferOptionsEmail(
     subject: `Transfer Options: ${formatCourseType(classData.courseType)}`,
     html,
     templateId: "E4",
+    enrollmentId: enrollment.id,
+  });
+}
+
+// ─── E14: STUDENT INFO REQUEST (PARENT/CHILD MISMATCH) ─────────────────────
+
+export async function sendStudentInfoRequestEmail(
+  enrollment: Enrollment,
+  student: Student,
+  classData: Class
+): Promise<void> {
+  // Determine who to address — prefer sgaRegistrantName, fall back to parentName
+  const parentName =
+    student.sgaRegistrantName ?? student.parentName ?? `${student.firstName} ${student.lastName}`;
+
+  const recipientEmail = student.parentEmail ?? student.email;
+
+  const html = await render(
+    StudentInfoRequestEmail({
+      parentName,
+      studentFirstName: student.firstName,
+      studentLastName: student.lastName,
+      courseName: formatCourseType(classData.courseType),
+      startDate: formatDate(classData.startDate),
+      location: formatLocation(classData.location),
+    })
+  );
+
+  await sendEmail({
+    to: recipientEmail,
+    subject: `Action Needed: Student Information for ${formatCourseType(classData.courseType)}`,
+    html,
+    templateId: "E14",
     enrollmentId: enrollment.id,
   });
 }
