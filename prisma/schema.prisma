@@ -212,6 +212,17 @@ model EmailLog {
   @@index([enrollmentId])
 }
 
+model EmailTemplate {
+  id         String   @id @default(cuid())
+  templateId String   @unique // E1, E2, E3, E4, E7, E14
+  name       String // Human-readable name
+  subject    String // Email subject line (supports {{variables}})
+  body       String // Email body HTML/text (supports {{variables}})
+  active     Boolean  @default(true)
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+}
+
 model SystemSettings {
   id                    String   @id @default("default")
   evaluationOptions     String[] // Red Cross LMS accepted Evaluation values

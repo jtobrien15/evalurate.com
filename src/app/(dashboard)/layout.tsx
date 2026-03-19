@@ -11,6 +11,7 @@ import {
   Download,
   ArrowLeftRight,
   Mail,
+  FileText,
   MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/dashboard/export" as const, label: "Export", icon: Download },
   { href: "/dashboard/transfers" as const, label: "Transfers", icon: ArrowLeftRight },
   { href: "/dashboard/emails" as const, label: "Emails", icon: Mail },
+  { href: "/dashboard/emails/templates" as const, label: "Templates", icon: FileText },
 ];
 
 const locationOptions = [

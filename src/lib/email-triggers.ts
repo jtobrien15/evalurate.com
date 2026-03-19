@@ -14,6 +14,7 @@ import PrereqFailedEmail from "@/emails/prereq-failed";
 import TransferOptionsEmail from "@/emails/transfer-options";
 import StudentInfoRequestEmail from "@/emails/student-info-request";
 import { COURSE_TYPE_LABELS, LOCATION_LABELS } from "@/lib/constants";
+import { renderCustomTemplate } from "@/lib/email-template-renderer";
 
 // ─── DISPLAY HELPERS ─────────────────────────────────────────────────────────
 
@@ -41,20 +42,24 @@ export async function sendWelcomeEmail(
   student: Student,
   classData: Class
 ): Promise<void> {
-  const html = await render(
-    WelcomeEmail({
-      studentName: `${student.firstName} ${student.lastName}`,
-      courseType: formatCourseType(classData.courseType),
-      startDate: formatDate(classData.startDate),
-      endDate: formatDate(classData.endDate),
-      scheduleDetails: classData.scheduleDetails,
-      location: formatLocation(classData.location),
-    })
-  );
+  const variables = {
+    studentName: `${student.firstName} ${student.lastName}`,
+    courseType: formatCourseType(classData.courseType),
+    startDate: formatDate(classData.startDate),
+    endDate: formatDate(classData.endDate),
+    scheduleDetails: classData.scheduleDetails,
+    location: formatLocation(classData.location),
+  };
+
+  // Check for custom template first
+  const custom = await renderCustomTemplate("E1", variables);
+
+  const subject = custom?.subject ?? `Registration Confirmed: ${formatCourseType(classData.courseType)}`;
+  const html = custom?.html ?? await render(WelcomeEmail(variables));
 
   await sendEmail({
     to: student.email,
-    subject: `Registration Confirmed: ${formatCourseType(classData.courseType)}`,
+    subject,
     html,
     templateId: "E1",
     enrollmentId: enrollment.id,
@@ -69,10 +74,19 @@ export async function sendPrereqFailedEmail(
   classData: Class,
   canRetry: boolean
 ): Promise<void> {
-  const html = await render(
+  const variables = {
+    studentName: `${student.firstName} ${student.lastName}`,
+    courseType: formatCourseType(classData.courseType),
+    canRetry: String(canRetry),
+  };
+
+  const custom = await renderCustomTemplate("E3", variables);
+
+  const subject = custom?.subject ?? `Prerequisite Swim Test Update: ${formatCourseType(classData.courseType)}`;
+  const html = custom?.html ?? await render(
     PrereqFailedEmail({
-      studentName: `${student.firstName} ${student.lastName}`,
-      courseType: formatCourseType(classData.courseType),
+      studentName: variables.studentName,
+      courseType: variables.courseType,
       canRetry,
       transferInfo: canRetry
         ? undefined
@@ -82,7 +96,7 @@ export async function sendPrereqFailedEmail(
 
   await sendEmail({
     to: student.email,
-    subject: `Prerequisite Swim Test Update: ${formatCourseType(classData.courseType)}`,
+    subject,
     html,
     templateId: "E3",
     enrollmentId: enrollment.id,
@@ -102,7 +116,7 @@ export async function sendTransferOptionsEmail(
       courseType: classData.courseType,
       startDate: { gt: new Date() },
       status: { in: ["SCHEDULED", "OPEN_FOR_REGISTRATION"] },
-      id: { not: classData.id }, // Exclude the current class
+      id: { not: classData.id },
     },
     orderBy: { startDate: "asc" },
     include: {
@@ -110,15 +124,27 @@ export async function sendTransferOptionsEmail(
     },
   });
 
-  // Filter out classes that are at capacity
   const openClasses = availableClasses.filter(
     (cls) => cls._count.enrollments < cls.maxEnrollment
   );
 
-  const html = await render(
+  const classesText = openClasses
+    .map((cls) => `• ${formatDate(cls.startDate)} at ${formatLocation(cls.location)} (${cls.maxEnrollment - cls._count.enrollments} spots)`)
+    .join("\n");
+
+  const variables = {
+    studentName: `${student.firstName} ${student.lastName}`,
+    courseType: formatCourseType(classData.courseType),
+    availableClasses: classesText || "No classes currently available — we will notify you when new dates are added.",
+  };
+
+  const custom = await renderCustomTemplate("E4", variables);
+
+  const subject = custom?.subject ?? `Transfer Options: ${formatCourseType(classData.courseType)}`;
+  const html = custom?.html ?? await render(
     TransferOptionsEmail({
-      studentName: `${student.firstName} ${student.lastName}`,
-      originalCourseType: formatCourseType(classData.courseType),
+      studentName: variables.studentName,
+      originalCourseType: variables.courseType,
       availableClasses: openClasses.map((cls) => ({
         id: cls.id,
         startDate: formatDate(cls.startDate),
@@ -130,7 +156,7 @@ export async function sendTransferOptionsEmail(
 
   await sendEmail({
     to: student.email,
-    subject: `Transfer Options: ${formatCourseType(classData.courseType)}`,
+    subject,
     html,
     templateId: "E4",
     enrollmentId: enrollment.id,
@@ -144,13 +170,21 @@ export async function sendStudentInfoRequestEmail(
   student: Student,
   classData: Class
 ): Promise<void> {
-  // Determine who to address — prefer sgaRegistrantName, fall back to parentName
   const parentName =
     student.sgaRegistrantName ?? student.parentName ?? `${student.firstName} ${student.lastName}`;
 
   const recipientEmail = student.parentEmail ?? student.email;
 
-  const html = await render(
+  const variables = {
+    studentName: `${student.firstName} ${student.lastName}`,
+    parentName,
+    courseType: formatCourseType(classData.courseType),
+  };
+
+  const custom = await renderCustomTemplate("E14", variables);
+
+  const subject = custom?.subject ?? `Action Needed: Student Information for ${formatCourseType(classData.courseType)}`;
+  const html = custom?.html ?? await render(
     StudentInfoRequestEmail({
       parentName,
       studentFirstName: student.firstName,
@@ -163,7 +197,7 @@ export async function sendStudentInfoRequestEmail(
 
   await sendEmail({
     to: recipientEmail,
-    subject: `Action Needed: Student Information for ${formatCourseType(classData.courseType)}`,
+    subject,
     html,
     templateId: "E14",
     enrollmentId: enrollment.id,

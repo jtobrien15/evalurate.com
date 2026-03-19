@@ -50,15 +50,21 @@ export default function ImportPage() {
 
       <div className="max-w-xl">
         <div className="rounded-lg border p-6 mb-6">
-          <h2 className="font-semibold mb-2">CSV Format</h2>
+          <h2 className="font-semibold mb-2">Supported Formats</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Export your roster from SGA Software and upload the CSV file here.
-            The CSV should include these columns:
+            Export your roster from SGA Software and upload it here. Supported
+            formats: <strong>CSV</strong>, <strong>Excel (.xlsx/.xls)</strong>,
+            and <strong>PDF</strong>. The file should include these columns:
           </p>
           <div className="rounded-md bg-muted p-3 text-xs font-mono">
             First Name, Last Name, Email, Phone, DOB, Parent Name, Parent
             Email, SGA Registration ID
           </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            <strong>Note:</strong> PDF import is best-effort. PDFs with
+            non-standard layouts may produce incomplete data and require manual
+            review.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -80,11 +86,11 @@ export default function ImportPage() {
 
           <div>
             <label className="block text-sm font-medium mb-2">
-              CSV File
+              Roster File
             </label>
             <input
               type="file"
-              accept=".csv"
+              accept=".csv,.xlsx,.xls,.pdf"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium"
             />

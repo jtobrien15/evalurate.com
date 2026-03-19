@@ -1,61 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { parseCSV, parseExcel, parsePDF } from "@/lib/file-parsers";
 
 /**
- * Parse a CSV string into rows of string arrays.
- * Handles quoted fields (including commas and newlines within quotes)
- * and double-quote escaping ("").
+ * Detect the file type from the filename extension and parse accordingly.
+ * Returns the parsed rows as string[][] (header row + data rows).
  */
-function parseCSV(text: string): string[][] {
-  const rows: string[][] = [];
-  let current = "";
-  let inQuotes = false;
-  let row: string[] = [];
+async function parseFile(file: File): Promise<string[][]> {
+  const name = file.name.toLowerCase();
 
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const next = text[i + 1];
-
-    if (inQuotes) {
-      if (char === '"' && next === '"') {
-        // Escaped quote
-        current += '"';
-        i++;
-      } else if (char === '"') {
-        // End of quoted field
-        inQuotes = false;
-      } else {
-        current += char;
-      }
-    } else {
-      if (char === '"') {
-        inQuotes = true;
-      } else if (char === ",") {
-        row.push(current.trim());
-        current = "";
-      } else if (char === "\n" || (char === "\r" && next === "\n")) {
-        row.push(current.trim());
-        current = "";
-        if (row.some((cell) => cell !== "")) {
-          rows.push(row);
-        }
-        row = [];
-        if (char === "\r") i++; // skip \n in \r\n
-      } else {
-        current += char;
-      }
-    }
+  if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
+    const buffer = await file.arrayBuffer();
+    return parseExcel(buffer);
   }
 
-  // Push last field and row
-  if (current !== "" || row.length > 0) {
-    row.push(current.trim());
-    if (row.some((cell) => cell !== "")) {
-      rows.push(row);
-    }
+  if (name.endsWith(".pdf")) {
+    const buffer = await file.arrayBuffer();
+    return parsePDF(buffer);
   }
 
-  return rows;
+  // Default: treat as CSV
+  const text = await file.text();
+  return parseCSV(text);
 }
 
 export async function POST(request: NextRequest) {
@@ -65,17 +31,16 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return NextResponse.json(
-        { error: "No file provided. Upload a CSV file with the field name 'file'." },
+        { error: "No file provided. Upload a CSV, Excel, or PDF file with the field name 'file'." },
         { status: 400 }
       );
     }
 
-    const text = await file.text();
-    const rows = parseCSV(text);
+    const rows = await parseFile(file);
 
     if (rows.length < 2) {
       return NextResponse.json(
-        { error: "CSV must contain a header row and at least one data row." },
+        { error: "File must contain a header row and at least one data row." },
         { status: 400 }
       );
     }
@@ -118,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     if (firstNameIdx === -1 || lastNameIdx === -1 || emailIdx === -1) {
       return NextResponse.json(
-        { error: "CSV must contain 'First Name', 'Last Name', and 'Email' columns." },
+        { error: "File must contain 'First Name', 'Last Name', and 'Email' columns." },
         { status: 400 }
       );
     }
@@ -217,9 +182,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ imported, errors });
   } catch (error) {
-    console.error("Failed to import CSV:", error);
+    console.error("Failed to import file:", error);
     return NextResponse.json(
-      { error: "Failed to import CSV" },
+      { error: "Failed to import file" },
       { status: 500 }
     );
   }
